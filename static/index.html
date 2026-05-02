@@ -367,10 +367,156 @@ textarea.setting-input{resize:vertical;min-height:80px;line-height:1.5}
   #sidebar.open{transform:translateX(0)}
   #sidebar-overlay.open{display:block}
   #menu-btn{display:flex}
-  #messages{padding:12px}
+  #messages{padding:10px}
   .msg-row{max-width:100%}
-  #input-area{padding:10px 12px 16px}
+  #input-area{padding:8px 10px max(12px, env(safe-area-inset-bottom, 12px))}
+  .input-hint{display:none}
+  .input-toolbar{gap:4px}
+  .toolbar-btn{padding:5px 8px;font-size:11px}
+  .msg-bubble{font-size:14px;padding:10px 13px}
+  .empty-title{font-size:22px}
+  .empty-subtitle{font-size:13px}
+  .suggestions{gap:6px}
+  .suggestion{padding:8px 12px;font-size:12px}
+  .model-badge{display:none}
 }
+
+/* ── IPHONE SAFE AREAS ── */
+#header{padding-top:max(12px, env(safe-area-inset-top, 12px))}
+#input-area{padding-bottom:max(20px, env(safe-area-inset-bottom, 20px))}
+#sidebar{padding-top:env(safe-area-inset-top, 0)}
+
+/* ── GAMES ── */
+#games-overlay{
+  position:fixed;inset:0;z-index:200;
+  background:var(--bg);
+  display:flex;flex-direction:column;
+  transform:translateY(100%);
+  transition:transform .35s cubic-bezier(.4,0,.2,1);
+  padding-top:env(safe-area-inset-top,0);
+}
+#games-overlay.open{transform:translateY(0)}
+.games-header{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 20px;
+  border-bottom:1px solid var(--border);
+  background:rgba(5,0,16,0.95);
+  backdrop-filter:blur(20px);
+  flex-shrink:0;
+}
+.games-title{font-size:16px;font-weight:700;color:var(--purple);letter-spacing:.5px}
+.games-close{
+  margin-left:auto;background:none;border:1px solid var(--border);
+  border-radius:8px;color:var(--text2);cursor:pointer;
+  padding:6px 12px;font-size:13px;transition:all .15s;
+}
+.games-close:hover{border-color:var(--border2);color:var(--text)}
+.games-tabs{
+  display:flex;gap:4px;padding:12px 16px;
+  border-bottom:1px solid var(--border);
+  flex-shrink:0;background:rgba(5,0,16,0.9);
+}
+.game-tab{
+  flex:1;padding:8px 4px;background:rgba(168,85,247,.06);
+  border:1px solid var(--border);border-radius:10px;
+  color:var(--text2);font-size:12px;font-weight:600;
+  cursor:pointer;transition:all .15s;text-align:center;
+}
+.game-tab.active{background:rgba(168,85,247,.2);border-color:var(--border2);color:var(--purple)}
+.games-body{flex:1;overflow-y:auto;display:flex;flex-direction:column;align-items:center;padding:20px 16px;gap:16px}
+
+/* Tic Tac Toe */
+.ttt-board{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:min(280px,80vw)}
+.ttt-cell{
+  aspect-ratio:1;background:rgba(168,85,247,.07);border:1px solid var(--border);
+  border-radius:12px;font-size:36px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s;
+}
+.ttt-cell:hover:empty{background:rgba(168,85,247,.15);border-color:var(--border2)}
+.ttt-cell.x{color:var(--purple);text-shadow:0 0 12px rgba(168,85,247,.5)}
+.ttt-cell.o{color:var(--green);text-shadow:0 0 12px rgba(16,185,129,.5)}
+.ttt-cell.win{background:rgba(168,85,247,.2);border-color:var(--border2);animation:win-pulse .5s ease infinite alternate}
+@keyframes win-pulse{from{box-shadow:0 0 0 rgba(168,85,247,.3)}to{box-shadow:0 0 16px rgba(168,85,247,.6)}}
+.game-status{
+  font-size:15px;font-weight:600;color:var(--text);
+  background:rgba(168,85,247,.08);border:1px solid var(--border);
+  border-radius:10px;padding:10px 20px;text-align:center;min-width:200px;
+}
+.game-btn{
+  padding:10px 24px;background:linear-gradient(135deg,var(--purple2),var(--purple3));
+  border:none;border-radius:10px;color:#fff;font-size:14px;font-weight:600;
+  cursor:pointer;transition:all .2s;
+}
+.game-btn:hover{background:linear-gradient(135deg,var(--purple),var(--purple2));box-shadow:0 0 16px rgba(168,85,247,.4)}
+.game-scores{display:flex;gap:12px}
+.score-box{
+  background:rgba(168,85,247,.07);border:1px solid var(--border);
+  border-radius:8px;padding:6px 16px;text-align:center;
+}
+.score-box .score-val{font-size:20px;font-weight:700;color:var(--purple)}
+.score-box .score-lbl{font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase}
+
+/* Snake */
+#snake-canvas{
+  border:1px solid var(--border2);border-radius:12px;
+  background:#04000f;display:block;
+  box-shadow:0 0 30px rgba(168,85,247,.1);
+  max-width:min(320px,90vw);
+  image-rendering:pixelated;
+}
+.snake-controls{display:grid;grid-template-columns:repeat(3,48px);grid-template-rows:repeat(2,48px);gap:6px;margin-top:8px}
+.dpad-btn{
+  background:rgba(168,85,247,.1);border:1px solid var(--border);
+  border-radius:10px;color:var(--text2);font-size:18px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .1s;
+}
+.dpad-btn:active{background:rgba(168,85,247,.3);color:var(--purple)}
+
+/* Word Guess */
+.wg-grid{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.wg-row{display:flex;gap:5px}
+.wg-tile{
+  width:min(52px,13vw);aspect-ratio:1;
+  background:rgba(168,85,247,.06);
+  border:2px solid var(--border);
+  border-radius:8px;display:flex;align-items:center;justify-content:center;
+  font-size:22px;font-weight:700;color:var(--text);
+  transition:all .2s;text-transform:uppercase;
+}
+.wg-tile.active-row{border-color:rgba(168,85,247,.4)}
+.wg-tile.correct{background:#166534;border-color:#16a34a;color:#fff}
+.wg-tile.present{background:#854d0e;border-color:#ca8a04;color:#fff}
+.wg-tile.absent{background:#1e1e2e;border-color:#374151;color:#6b7280}
+.wg-tile.pop{animation:tile-pop .1s ease}
+@keyframes tile-pop{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+.wg-keyboard{display:flex;flex-direction:column;gap:5px;align-items:center}
+.wg-kb-row{display:flex;gap:4px}
+.wg-key{
+  min-width:30px;padding:10px 5px;
+  background:rgba(168,85,247,.1);border:1px solid var(--border);
+  border-radius:6px;color:var(--text);font-size:12px;font-weight:600;
+  cursor:pointer;transition:all .1s;text-align:center;
+}
+.wg-key.wide{min-width:44px;font-size:10px}
+.wg-key:active{background:rgba(168,85,247,.3)}
+.wg-key.correct{background:#166534;border-color:#16a34a}
+.wg-key.present{background:#854d0e;border-color:#ca8a04}
+.wg-key.absent{background:#1e1e2e;border-color:#374151;color:#4b5563}
+.wg-msg{font-size:13px;color:var(--text2);min-height:20px;text-align:center;font-weight:600}
+
+/* Games btn in sidebar */
+.games-sidebar-btn{
+  display:flex;align-items:center;gap:8px;
+  padding:9px 10px;border-radius:8px;cursor:pointer;
+  font-size:13px;color:var(--text2);
+  background:rgba(168,85,247,.06);
+  border:1px solid var(--border);
+  transition:all .15s;margin:8px 8px 0;
+  font-weight:600;
+}
+.games-sidebar-btn:hover{background:rgba(168,85,247,.15);color:var(--text);border-color:var(--border2)}
 </style>
 </head>
 <body>
@@ -398,8 +544,9 @@ textarea.setting-input{resize:vertical;min-height:80px;line-height:1.5}
     </button>
   </div>
   <div id="conv-list"></div>
+  <div class="games-sidebar-btn" onclick="openGames()">🎮 Games</div>
   <div id="sidebar-bottom">
-    <div class="sidebar-info">Powered by <span>LLaMA 3.3 70B</span> via Groq</div>
+    <div class="sidebar-info">Powered by <span>LLaMA 3.1 8B</span> via Groq</div>
   </div>
 </div>
 
@@ -414,7 +561,7 @@ textarea.setting-input{resize:vertical;min-height:80px;line-height:1.5}
       <div class="header-subtitle" id="conv-title-display">New conversation</div>
     </div>
     <div class="header-right">
-      <div class="model-badge">LLaMA 3.3 · 70B</div>
+      <div class="model-badge">LLaMA 3.1 · 8B</div>
       <div class="status-dot" id="status-dot"></div>
       <button id="settings-btn" title="Settings">⚙️</button>
     </div>
@@ -469,6 +616,24 @@ textarea.setting-input{resize:vertical;min-height:80px;line-height:1.5}
       </button>
     </div>
     <div class="input-hint">Enter to send · Shift+Enter for new line · 🎙️ for voice</div>
+  </div>
+</div>
+
+<!-- GAMES OVERLAY -->
+<div id="games-overlay">
+  <div class="games-header">
+    <div>
+      <div class="games-title">🎮 Games</div>
+    </div>
+    <button class="games-close" onclick="closeGames()">✕ Back to Chat</button>
+  </div>
+  <div class="games-tabs">
+    <div class="game-tab active" onclick="switchGame('ttt',this)">⭕ Tic Tac Toe</div>
+    <div class="game-tab" onclick="switchGame('snake',this)">🐍 Snake</div>
+    <div class="game-tab" onclick="switchGame('wg',this)">📝 Word Guess</div>
+  </div>
+  <div class="games-body" id="games-body">
+    <!-- content injected by JS -->
   </div>
 </div>
 
@@ -1090,6 +1255,323 @@ function initCanvas() {
   }
   draw();
 }
+
+// ── GAMES ─────────────────────────────────────────────────────────────────────
+let currentGame = 'ttt';
+
+function openGames() {
+  closeSidebar();
+  document.getElementById('games-overlay').classList.add('open');
+  renderGame(currentGame);
+}
+function closeGames() {
+  document.getElementById('games-overlay').classList.remove('open');
+  snakeStop();
+}
+function switchGame(name, tab) {
+  snakeStop();
+  currentGame = name;
+  document.querySelectorAll('.game-tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  renderGame(name);
+}
+function renderGame(name) {
+  const body = document.getElementById('games-body');
+  if (name === 'ttt') { body.innerHTML = tttHTML(); tttInit(); }
+  else if (name === 'snake') { body.innerHTML = snakeHTML(); snakeInit(); }
+  else if (name === 'wg') { body.innerHTML = wgHTML(); wgInit(); }
+}
+
+// ── TIC TAC TOE ───────────────────────────────────────────────────────────────
+let tttBoard, tttTurn, tttScore = {p:0,ai:0,d:0};
+const TTT_WINS = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+
+function tttHTML() {
+  return `
+    <div class="game-scores">
+      <div class="score-box"><div class="score-val" id="ttt-ps">${tttScore.p}</div><div class="score-lbl">You</div></div>
+      <div class="score-box"><div class="score-val" id="ttt-ds" style="color:var(--text3)">${tttScore.d}</div><div class="score-lbl">Draw</div></div>
+      <div class="score-box"><div class="score-val" id="ttt-as" style="color:var(--green)">${tttScore.ai}</div><div class="score-lbl">AI</div></div>
+    </div>
+    <div class="game-status" id="ttt-status">Your turn — play X</div>
+    <div class="ttt-board" id="ttt-board">
+      ${Array(9).fill(0).map((_,i)=>`<div class="ttt-cell" id="tc${i}" onclick="tttClick(${i})"></div>`).join('')}
+    </div>
+    <button class="game-btn" onclick="tttInit()">New Game</button>`;
+}
+function tttInit() {
+  tttBoard = Array(9).fill('');
+  tttTurn = 'X';
+  document.querySelectorAll('.ttt-cell').forEach(c => { c.textContent=''; c.className='ttt-cell'; });
+  setTttStatus("Your turn — play X");
+}
+function tttClick(i) {
+  if (tttBoard[i] || tttTurn !== 'X') return;
+  tttPlace(i, 'X');
+  const w = tttCheckWin('X');
+  if (w) { tttHighlight(w); setTttStatus("🎉 You win!"); tttScore.p++; updateTttScore(); return; }
+  if (tttBoard.every(c=>c)) { setTttStatus("It's a draw!"); tttScore.d++; updateTttScore(); return; }
+  tttTurn = 'O';
+  setTttStatus("AI thinking…");
+  setTimeout(() => {
+    const move = tttBestMove();
+    tttPlace(move, 'O');
+    const w2 = tttCheckWin('O');
+    if (w2) { tttHighlight(w2); setTttStatus("🤖 AI wins!"); tttScore.ai++; updateTttScore(); return; }
+    if (tttBoard.every(c=>c)) { setTttStatus("It's a draw!"); tttScore.d++; updateTttScore(); return; }
+    tttTurn = 'X';
+    setTttStatus("Your turn — play X");
+  }, 400);
+}
+function tttPlace(i, mark) {
+  tttBoard[i] = mark;
+  const cell = document.getElementById('tc'+i);
+  if (cell) { cell.textContent = mark === 'X' ? '✕' : '○'; cell.classList.add(mark.toLowerCase()); }
+}
+function tttCheckWin(m) {
+  return TTT_WINS.find(w => w.every(i => tttBoard[i] === m)) || null;
+}
+function tttHighlight(w) {
+  w.forEach(i => document.getElementById('tc'+i)?.classList.add('win'));
+}
+function tttBestMove() {
+  // Win or block, else center, else random
+  for (const m of ['O','X']) {
+    for (let i=0;i<9;i++) {
+      if (!tttBoard[i]) { tttBoard[i]=m; if(tttCheckWin(m)){tttBoard[i]='';return i;} tttBoard[i]=''; }
+    }
+  }
+  if (!tttBoard[4]) return 4;
+  const corners = [0,2,6,8].filter(i=>!tttBoard[i]);
+  if (corners.length) return corners[Math.floor(Math.random()*corners.length)];
+  const empty = tttBoard.map((v,i)=>v?-1:i).filter(i=>i>=0);
+  return empty[Math.floor(Math.random()*empty.length)];
+}
+function setTttStatus(t) { const el=document.getElementById('ttt-status'); if(el) el.textContent=t; }
+function updateTttScore() {
+  const ps=document.getElementById('ttt-ps'),as=document.getElementById('ttt-as'),ds=document.getElementById('ttt-ds');
+  if(ps)ps.textContent=tttScore.p; if(as)as.textContent=tttScore.ai; if(ds)ds.textContent=tttScore.d;
+}
+
+// ── SNAKE ────────────────────────────────────────────────────────────────────
+let snakeInterval=null, snake, snakeDir, snakeFood, snakeScore, snakeRunning, snakeCtx, snakeW, snakeH, CELL=16;
+
+function snakeHTML() {
+  return `
+    <div class="game-status" id="snake-status">Tap Start to play</div>
+    <canvas id="snake-canvas" width="320" height="320"></canvas>
+    <div class="snake-controls">
+      <div></div><button class="dpad-btn" onpointerdown="snakeKey('ArrowUp')">▲</button><div></div>
+      <button class="dpad-btn" onpointerdown="snakeKey('ArrowLeft')">◀</button>
+      <button class="dpad-btn" onclick="snakeToggle()">⏯</button>
+      <button class="dpad-btn" onpointerdown="snakeKey('ArrowRight')">▶</button>
+      <div></div><button class="dpad-btn" onpointerdown="snakeKey('ArrowDown')">▼</button><div></div>
+    </div>`;
+}
+function snakeInit() {
+  const canvas = document.getElementById('snake-canvas');
+  if (!canvas) return;
+  const size = Math.min(320, Math.floor(window.innerWidth * 0.88 / 16) * 16);
+  canvas.width = canvas.height = size;
+  CELL = 16; snakeW = snakeH = Math.floor(size/CELL);
+  snakeCtx = canvas.getContext('2d');
+  snakeReset();
+  snakeDraw();
+  // Swipe support
+  let tx=0,ty=0;
+  canvas.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY;},{passive:true});
+  canvas.addEventListener('touchend',e=>{
+    const dx=e.changedTouches[0].clientX-tx, dy=e.changedTouches[0].clientY-ty;
+    if(Math.abs(dx)>Math.abs(dy)) snakeKey(dx>0?'ArrowRight':'ArrowLeft');
+    else snakeKey(dy>0?'ArrowDown':'ArrowUp');
+  },{passive:true});
+}
+function snakeReset() {
+  const mid = Math.floor(snakeW/2);
+  snake = [{x:mid,y:mid},{x:mid-1,y:mid},{x:mid-2,y:mid}];
+  snakeDir = {x:1,y:0}; snakeScore = 0; snakeRunning = false;
+  snakePlaceFood();
+}
+function snakePlaceFood() {
+  do { snakeFood={x:Math.floor(Math.random()*snakeW),y:Math.floor(Math.random()*snakeH)}; }
+  while (snake.some(s=>s.x===snakeFood.x&&s.y===snakeFood.y));
+}
+function snakeToggle() {
+  if (!snakeCtx) { snakeInit(); return; }
+  if (!snakeRunning) {
+    snakeRunning = true;
+    snakeInterval = setInterval(snakeStep, Math.max(80, 160-snakeScore*3));
+    setSnakeStatus('Score: ' + snakeScore);
+  } else { snakeStop(); setSnakeStatus('Paused — Score: '+snakeScore); }
+}
+function snakeStop() { clearInterval(snakeInterval); snakeInterval=null; if(snakeRunning){snakeRunning=false;} }
+function snakeKey(k) {
+  if (!snakeRunning) snakeToggle();
+  const m={ArrowUp:{x:0,y:-1},ArrowDown:{x:0,y:1},ArrowLeft:{x:-1,y:0},ArrowRight:{x:1,y:0}};
+  const d=m[k];
+  if(d && !(d.x===-snakeDir.x && d.y===-snakeDir.y)) snakeDir=d;
+}
+function snakeStep() {
+  const head={x:snake[0].x+snakeDir.x, y:snake[0].y+snakeDir.y};
+  if(head.x<0||head.x>=snakeW||head.y<0||head.y>=snakeH||snake.some(s=>s.x===head.x&&s.y===head.y)){
+    snakeStop(); setSnakeStatus('💀 Game over! Score: '+snakeScore); snakeRunning=false;
+    clearInterval(snakeInterval);
+    setTimeout(()=>{ snakeReset(); snakeDraw(); setSnakeStatus('Tap ⏯ to play again'); },1500);
+    return;
+  }
+  snake.unshift(head);
+  if(head.x===snakeFood.x&&head.y===snakeFood.y){
+    snakeScore++;
+    snakePlaceFood();
+    clearInterval(snakeInterval);
+    snakeInterval = setInterval(snakeStep, Math.max(60, 160-snakeScore*4));
+    setSnakeStatus('Score: '+snakeScore);
+  } else snake.pop();
+  snakeDraw();
+}
+function snakeDraw() {
+  if(!snakeCtx)return;
+  const ctx=snakeCtx, W=snakeW*CELL, H=snakeH*CELL;
+  ctx.fillStyle='#04000f'; ctx.fillRect(0,0,W,H);
+  // Grid
+  ctx.strokeStyle='rgba(168,85,247,0.05)'; ctx.lineWidth=.5;
+  for(let x=0;x<snakeW;x++){ctx.beginPath();ctx.moveTo(x*CELL,0);ctx.lineTo(x*CELL,H);ctx.stroke();}
+  for(let y=0;y<snakeH;y++){ctx.beginPath();ctx.moveTo(0,y*CELL);ctx.lineTo(W,y*CELL);ctx.stroke();}
+  // Food
+  ctx.fillStyle='#f87171'; ctx.shadowColor='#f87171'; ctx.shadowBlur=8;
+  ctx.beginPath(); ctx.arc(snakeFood.x*CELL+CELL/2,snakeFood.y*CELL+CELL/2,CELL/2-2,0,Math.PI*2); ctx.fill();
+  ctx.shadowBlur=0;
+  // Snake
+  snake.forEach((s,i)=>{
+    const g=ctx.createLinearGradient(s.x*CELL,s.y*CELL,(s.x+1)*CELL,(s.y+1)*CELL);
+    g.addColorStop(0,i===0?'#a855f7':'#7c3aed'); g.addColorStop(1,i===0?'#10b981':'#059669');
+    ctx.fillStyle=g; ctx.shadowColor=i===0?'#a855f7':'transparent'; ctx.shadowBlur=i===0?10:0;
+    ctx.beginPath();
+    ctx.roundRect(s.x*CELL+1,s.y*CELL+1,CELL-2,CELL-2,3);
+    ctx.fill(); ctx.shadowBlur=0;
+  });
+}
+function setSnakeStatus(t){const el=document.getElementById('snake-status');if(el)el.textContent=t;}
+document.addEventListener('keydown',e=>{
+  if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)&&document.getElementById('snake-canvas')){
+    e.preventDefault(); snakeKey(e.key);
+  }
+});
+
+// ── WORD GUESS ────────────────────────────────────────────────────────────────
+const WG_WORDS=['BRAVE','CRANE','FLAME','GHOST','PLUMB','STAVE','TROVE','WRATH','CRISP','DROWN','FLAIR','GLINT','HOIST','KNELT','PRISM','QUEST','RIDGE','SHELF','SMIRK','SWIFT','TENOR','ULCER','VENOM','WALTZ','XYLEM','YACHT','ZILCH','BLAZE','CHASE','DROVE','EMBER','FROST','GROAN','HAVEN','IRONY','JOUST','KNAVE','LOTUS','MIRTH','NOISE','OUNCE','PIVOT','QUIRK','RAVEN','SCALP','TALON','UPSET','VIVID','WEAVE','YEARN'];
+let wgWord, wgGuesses, wgCurrentRow, wgCurrentTile, wgGameOver, wgKeyState;
+
+function wgHTML() {
+  return `
+    <div class="wg-msg" id="wg-msg">Guess the 5-letter word!</div>
+    <div class="wg-grid" id="wg-grid"></div>
+    <div class="wg-keyboard" id="wg-keyboard"></div>
+    <button class="game-btn" id="wg-newbtn" style="display:none;margin-top:8px" onclick="wgInit()">Play Again</button>`;
+}
+function wgInit() {
+  wgWord = WG_WORDS[Math.floor(Math.random()*WG_WORDS.length)];
+  wgGuesses = Array(6).fill('').map(()=>Array(5).fill(''));
+  wgCurrentRow = 0; wgCurrentTile = 0; wgGameOver = false;
+  wgKeyState = {};
+  const btn = document.getElementById('wg-newbtn');
+  if (btn) btn.style.display='none';
+  wgRenderGrid(); wgRenderKeyboard();
+  setWgMsg('Guess the 5-letter word!');
+}
+function wgRenderGrid() {
+  const grid = document.getElementById('wg-grid'); if(!grid)return;
+  grid.innerHTML = '';
+  for(let r=0;r<6;r++){
+    const row=document.createElement('div'); row.className='wg-row'; row.id='wgr'+r;
+    for(let c=0;c<5;c++){
+      const t=document.createElement('div'); t.className='wg-tile'+(r===wgCurrentRow?' active-row':''); t.id=`wgt${r}${c}`;
+      t.textContent=wgGuesses[r][c]||'';
+      row.appendChild(t);
+    }
+    grid.appendChild(row);
+  }
+}
+function wgRenderKeyboard() {
+  const kb=document.getElementById('wg-keyboard'); if(!kb)return;
+  kb.innerHTML='';
+  [['Q','W','E','R','T','Y','U','I','O','P'],['A','S','D','F','G','H','J','K','L'],['ENTER','Z','X','C','V','B','N','M','⌫']].forEach(row=>{
+    const r=document.createElement('div'); r.className='wg-kb-row';
+    row.forEach(k=>{
+      const btn=document.createElement('button'); btn.className='wg-key'+(k.length>1?' wide':'');
+      btn.textContent=k; btn.id='wgk'+k;
+      const st=wgKeyState[k]; if(st) btn.classList.add(st);
+      btn.onclick=()=>wgInput(k);
+      r.appendChild(btn);
+    });
+    kb.appendChild(r);
+  });
+}
+function wgInput(k) {
+  if(wgGameOver)return;
+  if(k==='⌫'||k==='BACKSPACE'){
+    if(wgCurrentTile>0){ wgCurrentTile--; wgGuesses[wgCurrentRow][wgCurrentTile]=''; wgUpdateTile(wgCurrentRow,wgCurrentTile,''); }
+  } else if(k==='ENTER'){
+    if(wgCurrentTile<5){setWgMsg('Not enough letters!');return;}
+    wgSubmit();
+  } else if(k.length===1&&/[A-Z]/.test(k)&&wgCurrentTile<5){
+    wgGuesses[wgCurrentRow][wgCurrentTile]=k;
+    wgUpdateTile(wgCurrentRow,wgCurrentTile,k,true);
+    wgCurrentTile++;
+  }
+}
+function wgUpdateTile(r,c,letter,pop=false) {
+  const t=document.getElementById(`wgt${r}${c}`); if(!t)return;
+  t.textContent=letter;
+  if(pop){t.classList.add('pop');setTimeout(()=>t.classList.remove('pop'),150);}
+}
+function wgSubmit() {
+  const guess=wgGuesses[wgCurrentRow].join('');
+  const result=Array(5).fill('absent');
+  const wordArr=wgWord.split(''), used=Array(5).fill(false);
+  // Correct pass
+  for(let i=0;i<5;i++){if(guess[i]===wordArr[i]){result[i]='correct';used[i]=true;}}
+  // Present pass
+  for(let i=0;i<5;i++){
+    if(result[i]==='correct')continue;
+    const idx=wordArr.findIndex((c,j)=>c===guess[i]&&!used[j]);
+    if(idx>=0){result[i]='present';used[idx]=true;}
+  }
+  // Animate tiles
+  result.forEach((res,c)=>{
+    setTimeout(()=>{
+      const t=document.getElementById(`wgt${wgCurrentRow}${c}`); if(t) t.className='wg-tile '+res;
+      // Update key state
+      const k=guess[c],cur=wgKeyState[k];
+      if(!cur||(cur==='absent')||(cur==='present'&&res==='correct')) wgKeyState[k]=res;
+      if(c===4) setTimeout(wgRenderKeyboard,50);
+    },c*100);
+  });
+  setTimeout(()=>{
+    if(result.every(r=>r==='correct')){
+      setWgMsg('🎉 Brilliant! You got it!'); wgGameOver=true;
+      document.getElementById('wg-newbtn').style.display='block';
+    } else {
+      wgCurrentRow++;
+      if(wgCurrentRow>=6){
+        setWgMsg(`The word was ${wgWord}`); wgGameOver=true;
+        document.getElementById('wg-newbtn').style.display='block';
+      } else {
+        wgCurrentTile=0;
+        // Activate new row
+        document.querySelectorAll('.wg-tile').forEach(t=>t.classList.remove('active-row'));
+        for(let c=0;c<5;c++) document.getElementById(`wgt${wgCurrentRow}${c}`)?.classList.add('active-row');
+        setWgMsg(`${6-wgCurrentRow} attempts left`);
+      }
+    }
+  }, 600);
+}
+function setWgMsg(t){const el=document.getElementById('wg-msg');if(el)el.textContent=t;}
+document.addEventListener('keydown',e=>{
+  if(!document.getElementById('wg-grid'))return;
+  const k=e.key.toUpperCase();
+  if(k==='ENTER'||k==='BACKSPACE'||(k.length===1&&/[A-Z]/.test(k))) wgInput(k);
+});
 
 // ── SERVICE WORKER ────────────────────────────────────────────────────────────
 if ('serviceWorker' in navigator) {
