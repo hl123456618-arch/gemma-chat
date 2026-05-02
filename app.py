@@ -11,7 +11,7 @@ app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], all
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
-MODEL = "llama-3.1-8b-instant"
+MODEL = "llama3-8b-8192"
 
 SYSTEM_PROMPT = """You are Gemma, an advanced AI assistant that is brilliant, creative, warm, and deeply helpful.
 
