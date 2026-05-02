@@ -212,7 +212,9 @@ class ChatRequest(BaseModel):
 @app.post("/chat")
 async def chat(req: ChatRequest):
     async def stream():
-        history = [{"role": "system", "content": SYSTEM_PROMPT}] + req.messages
+        allowed = {'role', 'content', 'tool_calls', 'tool_call_id', 'name'}
+        clean = [{k: v for k, v in m.items() if k in allowed} for m in req.messages]
+        history = [{"role": "system", "content": SYSTEM_PROMPT}] + clean
 
         # Tool-call turns: non-streaming so we can detect tool_calls
         for turn in range(5):
