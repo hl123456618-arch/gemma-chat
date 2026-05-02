@@ -214,7 +214,8 @@ async def chat(req: ChatRequest):
     async def stream():
         history = [{"role": "system", "content": SYSTEM_PROMPT}] + req.messages
 
-        for turn in range(6):
+        # Tool-call turns: non-streaming so we can detect tool_calls
+        for turn in range(5):
             try:
                 async with httpx.AsyncClient(timeout=60) as client:
                     r = await client.post(
@@ -234,24 +235,45 @@ async def chat(req: ChatRequest):
                 return
 
             tool_calls = msg.get("tool_calls") or []
-            if tool_calls:
-                history.append(msg)
-                for call in tool_calls:
-                    fn_name = call["function"]["name"]
-                    raw_args = call["function"].get("arguments", "{}")
-                    fn_args = json.loads(raw_args) if isinstance(raw_args, str) else raw_args
-                    yield f"data: {json.dumps({'type': 'tool_call', 'name': fn_name, 'args': fn_args})}\n\n"
-                    fn = TOOL_MAP.get(fn_name)
-                    result = await fn(**fn_args) if fn else {"error": f"Unknown tool: {fn_name}"}
-                    yield f"data: {json.dumps({'type': 'tool_result', 'name': fn_name, 'result': result})}\n\n"
-                    history.append({"role": "tool", "tool_call_id": call["id"], "content": json.dumps(result)})
-            else:
-                content = msg.get("content", "")
-                yield f"data: {json.dumps({'type': 'stream_start'})}\n\n"
-                for word in content.split(" "):
-                    yield f"data: {json.dumps({'type': 'token', 'token': word + ' '})}\n\n"
-                yield f"data: {json.dumps({'type': 'done'})}\n\n"
-                return
+            if not tool_calls:
+                # No tools needed — re-request with streaming for fast first token
+                break
+
+            history.append(msg)
+            for call in tool_calls:
+                fn_name = call["function"]["name"]
+                raw_args = call["function"].get("arguments", "{}")
+                fn_args = json.loads(raw_args) if isinstance(raw_args, str) else raw_args
+                yield f"data: {json.dumps({'type': 'tool_call', 'name': fn_name, 'args': fn_args})}\n\n"
+                fn = TOOL_MAP.get(fn_name)
+                result = await fn(**fn_args) if fn else {"error": f"Unknown tool: {fn_name}"}
+                yield f"data: {json.dumps({'type': 'tool_result', 'name': fn_name, 'result': result})}\n\n"
+                history.append({"role": "tool", "tool_call_id": call["id"], "content": json.dumps(result)})
+
+        # Final streaming response — tokens appear immediately
+        try:
+            yield f"data: {json.dumps({'type': 'stream_start'})}\n\n"
+            async with httpx.AsyncClient(timeout=60) as client:
+                async with client.stream(
+                    "POST", GROQ_URL,
+                    json={"model": MODEL, "messages": history, "stream": True, "max_tokens": 2048},
+                    headers={"Authorization": f"Bearer {GROQ_API_KEY}", "Content-Type": "application/json"}
+                ) as r:
+                    async for line in r.aiter_lines():
+                        if not line.startswith("data: "):
+                            continue
+                        payload = line[6:]
+                        if payload == "[DONE]":
+                            break
+                        try:
+                            chunk = json.loads(payload)
+                            token = chunk["choices"][0]["delta"].get("content", "")
+                            if token:
+                                yield f"data: {json.dumps({'type': 'token', 'token': token})}\n\n"
+                        except Exception:
+                            pass
+        except Exception as e:
+            yield f"data: {json.dumps({'type': 'error', 'message': str(e)})}\n\n"
 
         yield f"data: {json.dumps({'type': 'done'})}\n\n"
 
